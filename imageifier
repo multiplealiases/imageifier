@@ -35,7 +35,7 @@ function file_none() {
 }
 
 
-ARGS="$(getopt --options h,p:,s:,c:,a:,b:,o: --long help,pixfmt:,size:,columns:,spacing:,background:,output: -- "$@")"
+ARGS="$(getopt --options h,p:,s:,c:,a:,b:,e:,o: --long help,pixfmt:,size:,columns:,spacing:,background:,scale:,output: -- "$@")"
 eval set -- "$ARGS"
 while true; do
         case "$1" in
@@ -63,6 +63,10 @@ while true; do
             background="$2"
             shift 2
             ;;
+        -e | --scale)
+            scale_factor="$2"
+            shift 2
+            ;;
         -o | --output)
             output_prefix="$2"
             shift 2
@@ -88,17 +92,27 @@ while true; do
     esac
 done
 
+pixfmt="${pixfmt:-rgb24}"
+slice_size="${slice_size:-1x96}"
+columns="${columns:-}"
+column_spacing="${column_spacing:-0}"
+background="${background:-none}"
+scale_factor="${scale_factor:-1}"
 
 filename="$(basename "$filepath")"
 base_filename="${filename%.*}"
 output_prefix="${output_prefix:-$base_filename}"
-output_filename="$output_prefix"-"$slice_size"-"$columns"-"$column_spacing"-"$background"
+output_filename="$output_prefix"-"$pixfmt"-"$slice_size"-"$columns"-"$column_spacing"-"$background"-"$scale_factor"
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT ERR
 
-ffmpeg -f rawvideo -pix_fmt "$pixfmt" -s "$slice_size" -i - "$tmp"/%10d.png
+ffmpeg -f rawvideo -pix_fmt "$pixfmt" -s "$slice_size" -i "$filepath" "$tmp"/%10d.png
 
-convert "$tmp"/*.png -transpose miff:- | \
+find "$tmp" -type f | tac | sed '$d' > "$tmp"/filelist
+
+< "$tmp"/filelist convert @- -transpose miff:-  | \
 montage - -tile x"$columns" -geometry "1x1<+0+$column_spacing" -background "$background" miff:- | \
-convert - transpose "$output_filename".png
+convert - -transpose +repage -scale "$scale_factor"00% "$output_filename".png
+
+rm -r "$tmp"
