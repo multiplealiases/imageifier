@@ -124,6 +124,6 @@ find "$tmp" -type f | tac | sed '$d' > "$tmp"/filelist
 
 < "$tmp"/filelist convert @- -transpose miff:-  | \
 montage - -tile x"$columns" -geometry "1x1<+0+$column_spacing" -background "$background" miff:- | \
-convert - -transpose +repage -scale "$scale_factor"00% "$output_filename".png
+convert - -transpose +repage -trim -scale "$scale_factor"00% "$output_filename".png
 
 rm -r "$tmp"
