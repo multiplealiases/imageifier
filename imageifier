@@ -104,7 +104,7 @@ while true; do
 done
 
 pixfmt="${pixfmt:-rgb24}"
-slice_size="${slice_size:-1x96}"
+slice_size="${slice_size:-96x1}"
 columns="${columns:-}"
 column_spacing="${column_spacing:-0}"
 background="${background:-none}"
