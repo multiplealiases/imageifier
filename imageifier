@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+set -o nounset
+set -o errexit
+set -o pipefail
+
+function banner() {
+    echo Convert arbitrary data into images.
+}
+
+function usage() {
+    echo Usage: imageify \[options\] filename
+}
+
+function help_text(){
+    cat << EOF
+$(banner)
+$(usage)
+
+Text encased in [] are defaults.
+Options:
+EOF
+}
+
+
+function file_notexist() {
+    printf ''\''%s'\'': file does not exist\n' "$1"
+    exit 3
+}
+
+function file_none() {
+    echo No file was specified.
+    help_text
+    exit 4
+}
+
+
+ARGS="$(getopt --options h,p:,s:,c:,a:,b:,o: --long help,pixfmt:,size:,columns:,spacing:,background:,output: -- "$@")"
+eval set -- "$ARGS"
+while true; do
+        case "$1" in
+        -h | --help)
+            help_text
+            exit 127
+            ;;
+        -p | --pixfmt)
+            pixfmt="$2"
+            shift 2
+            ;;
+        -s | --size)
+            slice_size="$2"
+            shift 2
+            ;;
+        -c | --columns)
+            columns="$2"
+            shift 2
+            ;;
+        -a | --spacing)
+            column_spacing="$2"
+            shift 2
+            ;;
+        -b | --background)
+            background="$2"
+            shift 2
+            ;;
+        -o | --output)
+            output_prefix="$2"
+            shift 2
+            ;;
+        --)
+            set +o nounset 
+            if [[ -z "$2" ]]
+            then 
+                file_none
+            elif [[ ! -e "$2" ]]
+            then
+                file_notexist "$2"
+            fi
+            set -o nounset
+            filepath="$2"
+            break
+            ;;
+        *)
+            printf 'How did you get here? The last args I saw were \n%s\n' "$@"
+            exit 1
+            break
+            ;;
+    esac
+done
+
+
+filename="$(basename "$filepath")"
+base_filename="${filename%.*}"
+output_prefix="${output_prefix:-$base_filename}"
+output_filename="$output_prefix"-"$slice_size"-"$columns"-"$column_spacing"-"$background"
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT ERR
+
+ffmpeg -f rawvideo -pix_fmt "$pixfmt" -s "$slice_size" -i - "$tmp"/%10d.png
+
+convert "$tmp"/*.png -transpose miff:- | \
+montage - -tile x"$columns" -geometry "1x1<+0+$column_spacing" -background "$background" miff:- | \
+convert - transpose "$output_filename".png
