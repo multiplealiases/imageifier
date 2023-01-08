@@ -105,7 +105,7 @@ done
 
 pixfmt="${pixfmt:-rgb24}"
 slice_size="${slice_size:-96x1}"
-columns="${columns:-}"
+columns="${columns:-1}"
 column_spacing="${column_spacing:-0}"
 background="${background:-none}"
 scale_factor="${scale_factor:-1}"
