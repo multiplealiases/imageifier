@@ -22,7 +22,7 @@ Slice options:
 -s, --size         size of each slice [96x1]
 -p, --pixfmt       pixel format of each slice [rgb24]
 Stitching options:
--c, --columns      number of columns of slices []
+-c, --columns      number of columns of slices [1]
 -a, --spacing      spacing between columns in pixels [0]
 -b, --background   background color to use [none]
 Postprocessing options:
