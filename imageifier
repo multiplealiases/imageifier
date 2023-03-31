@@ -83,9 +83,9 @@ while true; do
             shift 2
             ;;
         --)
-            set +o nounset 
+            set +o nounset
             if [[ -z "$2" ]]
-            then 
+            then
                 file_none
             elif [[ ! -e "$2" ]]
             then
@@ -120,9 +120,7 @@ trap 'rm -rf "$tmp"' EXIT ERR
 
 ffmpeg -f rawvideo -pix_fmt "$pixfmt" -s "$slice_size" -i "$filepath" "$tmp"/%10d.png
 
-find "$tmp" -type f | tac | sed '$d' > "$tmp"/filelist
-
-< "$tmp"/filelist convert @- -transpose miff:-  | \
+find "$tmp" -type f | tac | sort | sed '$d' | convert @- -transpose miff:-  | \
 montage - -tile x"$columns" -geometry "1x1<+0+$column_spacing" -background "$background" miff:- | \
 convert - -transpose +repage -shave "$column_spacing"x0 -scale "$scale_factor"00% "$output_filename".png
 
