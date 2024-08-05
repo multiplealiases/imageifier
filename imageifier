@@ -9,7 +9,7 @@ function banner() {
 }
 
 function usage() {
-    echo Usage: imageify \[options\] filename
+    echo Usage: imageifier \[options\] filename
 }
 
 function help_text(){
