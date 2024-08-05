@@ -11,7 +11,7 @@ Useful for visualizing the structure of binaries.
 
 It 'slices' a binary into slices of a given size, by default 96x1 in rgb24
 (representing (96 × 1) px x 3 bytes/px = 288 bytes per slice) then glues the
-slices vertically together to make a single(possibly very long!) image
+slices vertically together to make a single (possibly very long!) image
 out of it.
 
 This approach allows small binaries to be visualized, as binaries only need
@@ -56,7 +56,7 @@ $ imageifier /usr/bin/xterm
 ```
 
 <details>
-  <summary>imageified /usr/bin/xterm, larger</summary>
+  <summary>imageified /usr/bin/xterm</summary>
 
 ![](assets/xterm-rgb24-96x1-1-0-none-1.png)
 
