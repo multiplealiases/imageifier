@@ -85,7 +85,7 @@ You might want to imageify a huge binary (5+ MB). In this case, you may want
 to consider increasing the height of an individual slice to make it run faster.
 
 ```
-$ imageifier /usr/lib64/libkritaui.so.18.0.0 -c 16 -s 96x96
+$ imageifier /usr/lib64/libkritaui.so.18.0.0 -c 24 -s 96x96
 ```
 
 <details>
